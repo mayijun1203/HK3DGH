@@ -1,0 +1,91 @@
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+<style>
+    html,
+    body,
+    #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #000000;
+    }
+
+    button {
+        font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background-color: white;
+        color: #1F879C;
+        border-color: #1F879C;
+        border-radius: 3px;
+        padding: 4px 8px;
+        margin: 10px 0px 0px 10px;
+        z-index: 999;
+        position: fixed;
+        cursor: pointer;
+    }
+
+    button.stopped:after {
+        content: '\25B6\0020 Fly Through';
+    }
+
+    button.playing {
+        background-color: #1F879C;
+        color: white;
+    }
+
+    button.playing:after {
+        content: '\25FC\0020 Fly Through';
+    }
+</style>
+
+<body>
+    <div id="cesiumContainer"></div>
+    <div id="credit" style="display:none"></div>
+    <script>
+
+        const basemapProvider = new Cesium.UrlTemplateImageryProvider({
+            url: 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/imagery/WGS84/{z}/{x}/{y}.png',
+            credit: "© Map from Lands Department"
+        });
+
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+            baseLayer: new Cesium.ImageryLayer(basemapProvider),
+            baseLayerPicker: false,
+            timeline: false,
+            animation: false,
+            vrButton: false,
+            fullscreenButton: false,
+            homeButton: false,
+            navigationHelpButton: false,
+            geocoder: false,
+            sceneModePicker: false,
+            requestRenderMode: true,
+            creditContainer: "credit",
+        });
+
+        addLayer = async () => {
+            let tileset = await Cesium.Cesium3DTileset.fromUrl(
+                'https://data.map.gov.hk/api/3d-data/meshmodel/WGS84/tileset.json?key=ad5940a63bd344c48b0351ef1c7a905e'
+            );
+            viewer.scene.primitives.add(tileset);
+        }
+
+        addLayer();
+
+        viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+                114.09086884578214,
+                22.044338206507053,
+                35339.14068737606
+            ),
+            orientation: {
+                heading: 6.280194717481077,
+                pitch: -0.7921019105734031,
+                roll: 6.283182074536001,
+            },
+            duration: 0,
+        });
+    </script>
+</body>
